@@ -5,12 +5,15 @@ Description=Zookeeper %i
 Type=simple
 EnvironmentFile=/etc/environment
 Environment="TAG=3.4.5"
-ExecStartPre=/usr/bin/docker pull emmanuel/zookeeper-1:$TAG
+ExecStartPre=/usr/bin/docker pull emmanuel/zookeeper:$TAG
 ExecStart=/usr/bin/docker run --name zookeeper \
                               --env ZK_SERVER_NUMBER=%i \
-                              -p 2181 -p 2888 -p 3888 \
+                              --hostname zookeeper-%i.prod.cluster.local \
+                              --publish 2181 \
+                              --publish 2888 \
+                              --publish 3888 \
                               --dns-search=prod.cluster.local \
-                              emmanuel/zookeeper-1:$TAG
+                              emmanuel/zookeeper:${TAG}
 
 [X-Fleet]
 X-Conflicts=zookeeper@*.service
