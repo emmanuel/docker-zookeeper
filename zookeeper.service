@@ -5,7 +5,7 @@ Description=zookeeper
 Type=simple
 EnvironmentFile=/etc/environment
 Environment="TAG=3.4.5"
-Environment="ENV=test"
+Environment="ENV=tst"
 ExecStartPre=-/usr/bin/docker pull emmanuel/zookeeper:${TAG}
 ExecStart=/usr/bin/docker run --rm \
                               --name zookeeper \
