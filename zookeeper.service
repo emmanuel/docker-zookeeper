@@ -12,9 +12,9 @@ ExecStart=/usr/bin/docker run --rm \
                               --env ZK_SERVER_NUMBER=%i \
                               --hostname zookeeper-%i.${ENV}.cluster.local \
                               --dns-search ${ENV}.cluster.local \
-                              --publish 2181 \
-                              --publish 2888 \
-                              --publish 3888 \
+                              --publish 2181:2181 \
+                              --publish 2888:2888 \
+                              --publish 3888:3888 \
                               emmanuel/zookeeper:${TAG}
 
 ExecStop=/usr/bin/docker stop zookeeper
