@@ -5,8 +5,8 @@ Description=zookeeper
 Type=simple
 EnvironmentFile=/etc/environment
 Environment="TAG=3.4.5"
-Environment="ENV=tst"
 ExecStartPre=-/usr/bin/docker pull emmanuel/zookeeper:${TAG}
+Environment="ENV=test"
 ExecStart=/usr/bin/docker run --rm \
                               --name zookeeper \
                               --env ZK_SERVER_NUMBER=%i \
