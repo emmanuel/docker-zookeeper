@@ -7,7 +7,7 @@ EnvironmentFile=/etc/environment
 Environment="TAG=3.4.5"
 Environment="ENV=test"
 ExecStart=/usr/bin/docker run --rm \
-                              --name zookeeper \
+                              --name zookeeper-%i \
                               --env ZK_SERVER_NUMBER=%i \
                               --hostname zookeeper-%i.${ENV}.cluster.local \
                               --dns-search ${ENV}.cluster.local \
@@ -16,7 +16,7 @@ ExecStart=/usr/bin/docker run --rm \
                               --publish 3888:3888 \
                               emmanuel/zookeeper:${TAG}
 
-ExecStop=/usr/bin/docker stop zookeeper
+ExecStop=/usr/bin/docker stop zookeeper-%i
 
 [X-Fleet]
 X-Conflicts=zookeeper@*.service
