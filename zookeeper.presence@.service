@@ -1,0 +1,40 @@
+[Unit]
+Description=Zookeeper Presence
+BindTo=zookeeper@%i.service
+After=zookeeper@%i.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+
+EnvironmentFile=/etc/environment
+Environment="ENV=test"
+Environment="ZOOKEEPER_CLIENT_PORT=2181"
+Environment="ZOOKEEPER_LEADER_PORT=2888"
+Environment="ZOOKEEPER_LEADER_ELECTION_PORT=3888"
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/cluster/${ENV}/zookeeper-%i {\"host\":\"%m.hosts.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/cluster/${ENV}/zookeeper-%i "{\"host\":\"%m.hosts.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}"
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/cluster/${ENV}/zookeeper/%i {\"host\":\"%m.hosts.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/cluster/${ENV}/zookeeper/%i "{\"host\":\"%m.hosts.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}"
+
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/cluster/${ENV}/_tcp/_zookeeper/%i {\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/cluster/${ENV}/_tcp/_zookeeper/%i "{\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_CLIENT_PORT}}"
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/cluster/${ENV}/_tcp/_zookeeper-leader/%i {\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_LEADER_PORT}}\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/cluster/${ENV}/_tcp/_zookeeper-leader/%i "{\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_LEADER_PORT}}"
+ExecStartPre=/usr/bin/printf "Announcing: /skydns/local/cluster/${ENV}/_tcp/_zookeeper-leader-election/%i {\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_LEADER_ELECTION_PORT}}\n"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/local/cluster/${ENV}/_tcp/_zookeeper-leader-election/%i "{\"host\":\"zookeeper-%i.${ENV}.cluster.local\",\"port\":${ZOOKEEPER_LEADER_ELECTION_PORT}}"
+
+ExecStart=/usr/bin/printf "Announced\n"
+
+# zookeeper-1.test.cluster.local
+# 1.zookeeper.test.cluster.local
+# zookeeper.test.cluster.local -> round-robin
+# _zookeeper._tcp.test.cluster.local 2181
+# _zookeeper-leader._tcp.test.cluster.local 2888
+# _zookeeper-leader-election._tcp.test.cluster.local 3888
+
+[X-Fleet]
+MachineOf=zookeeper@%i.service
